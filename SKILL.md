@@ -1,6 +1,6 @@
 ---
 name: audio-tagger
-description: Tag audio files (MP3, FLAC, OGG, M4A, AIFF, ALAC, WMA) with metadata from filenames or Discogs. Extracts artist/title from filename patterns, optionally enriches with year, genre, style, and label from Discogs (finds earliest release for accurate year). Use when user wants to add ID3 tags or audio metadata.
+description: Tag audio files (MP3, FLAC, OGG, M4A/ALAC, AIFF, WMA) with metadata from filenames or Discogs. Extracts artist/title from filename patterns, optionally enriches with year, genre, style, and label from Discogs (finds earliest release for accurate year). Use when user wants to add ID3 tags or audio metadata.
 ---
 
 # Audio Tagger
@@ -11,7 +11,8 @@ Tag audio files with metadata parsed from filenames, optionally enriched via Dis
 
 - **MP3** → ID3v2 (TPE1, TIT2, TDRC, TCON, TPUB)
 - **FLAC/OGG** → Vorbis comments  
-- **M4A/MP4** → iTunes-style tags
+- **M4A/MP4/ALAC** → iTunes-style tags
+- **AIFF** → ID3 tags
 - **WMA** → ASF tags
 
 ## Quick Start
@@ -66,10 +67,10 @@ Default: `{artist} - {title}`
 
 ## Tags Written
 
-| Field | MP3 (ID3) | FLAC/OGG | M4A |
-|-------|-----------|----------|-----|
-| Artist | TPE1 | artist | ©ART |
-| Title | TIT2 | title | ©nam |
-| Year | TDRC | date | ©day |
-| Genre | TCON | genre | ©gen |
-| Label | TPUB | label | — |
+| Field | MP3/AIFF (ID3) | FLAC/OGG | M4A/ALAC | WMA |
+|-------|----------------|----------|----------|-----|
+| Artist | TPE1 | artist | ©ART | Author |
+| Title | TIT2 | title | ©nam | Title |
+| Year | TDRC | date | ©day | WM/Year |
+| Genre | TCON | genre | ©gen | WM/Genre |
+| Label | TPUB | label | — | WM/Publisher |
