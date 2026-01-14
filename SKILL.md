@@ -1,6 +1,6 @@
 ---
 name: audio-tagger
-description: Tag audio files (MP3, FLAC, OGG, M4A, WAV, WMA) with metadata from filenames or Discogs. Extracts artist/title from filename patterns, optionally enriches with year, genre, style, and label from Discogs (finds earliest release for accurate year). Use when user wants to add ID3 tags or audio metadata.
+description: Tag audio files (MP3, FLAC, OGG, M4A, AIFF, ALAC, WMA) with metadata from filenames or Discogs. Extracts artist/title from filename patterns, optionally enriches with year, genre, style, and label from Discogs (finds earliest release for accurate year). Use when user wants to add ID3 tags or audio metadata.
 ---
 
 # Audio Tagger
@@ -12,7 +12,6 @@ Tag audio files with metadata parsed from filenames, optionally enriched via Dis
 - **MP3** → ID3v2 (TPE1, TIT2, TDRC, TCON, TPUB)
 - **FLAC/OGG** → Vorbis comments  
 - **M4A/MP4** → iTunes-style tags
-- **WAV** → ID3 tags
 - **WMA** → ASF tags
 
 ## Quick Start
