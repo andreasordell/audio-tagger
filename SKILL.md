@@ -1,17 +1,16 @@
 ---
 name: audio-tagger
-description: Tag audio files (MP3, FLAC, OGG, M4A, WAV, WMA) with artist and title metadata extracted from filenames. Use when the user wants to add ID3 tags, Vorbis comments, or other audio metadata based on filename patterns like "Artist - Title.mp3".
+description: Tag audio files (MP3, FLAC, OGG, M4A, WAV, WMA) with metadata from filenames or Discogs. Extracts artist/title from filename patterns, optionally enriches with year, genre, style, and label from Discogs (finds earliest release for accurate year). Use when user wants to add ID3 tags or audio metadata.
 ---
 
 # Audio Tagger
 
-Tag audio files with artist/title metadata parsed from filenames.
+Tag audio files with metadata parsed from filenames, optionally enriched via Discogs.
 
 ## Supported Formats
 
-- **MP3** → ID3v2 tags
-- **FLAC** → Vorbis comments  
-- **OGG** → Vorbis comments
+- **MP3** → ID3v2 (TPE1, TIT2, TDRC, TCON, TPUB)
+- **FLAC/OGG** → Vorbis comments  
 - **M4A/MP4** → iTunes-style tags
 - **WAV** → ID3 tags
 - **WMA** → ASF tags
@@ -19,54 +18,59 @@ Tag audio files with artist/title metadata parsed from filenames.
 ## Quick Start
 
 ```bash
-# Install dependency
-pip install mutagen --break-system-packages
+pip install mutagen requests --break-system-packages
 
-# Tag single file (default pattern: "{artist} - {title}")
-python scripts/tag_audio.py "Pink Floyd - Comfortably Numb.mp3"
-
-# Tag directory
+# Basic: artist/title from filename
 python scripts/tag_audio.py ./music/
 
-# Preview without changes
-python scripts/tag_audio.py ./music/ --dry-run
+# With Discogs metadata (year, genre, label)
+python scripts/tag_audio.py ./music/ --discogs
 
-# Process subdirectories
-python scripts/tag_audio.py ./music/ --recursive
+# Preview first
+python scripts/tag_audio.py ./music/ --discogs --dry-run
+```
+
+## Discogs Integration
+
+Fetches from Discogs API to find **earliest release** (accurate year), plus genre, style, and label.
+
+```bash
+# Standalone lookup
+python scripts/discogs_lookup.py "Pink Floyd" "Comfortably Numb"
+
+# JSON output for scripting
+python scripts/discogs_lookup.py "Pink Floyd" "Comfortably Numb" --json
+```
+
+**API token** (optional, higher rate limits):
+```bash
+export DISCOGS_TOKEN=your_token_here
+# or
+python scripts/tag_audio.py ./music/ --discogs --discogs-token YOUR_TOKEN
 ```
 
 ## Filename Patterns
 
-Default: `{artist} - {title}` matches "Artist - Song Title.mp3"
+Default: `{artist} - {title}`
 
-Custom patterns:
 ```bash
---pattern "{title} - {artist}"      # "Song Title - Artist.mp3"
---pattern "{artist} -- {title}"     # "Artist -- Song Title.mp3"  
---pattern "{artist}_{title}"        # "Artist_Song Title.mp3"
+--pattern "{title} - {artist}"      # Title first
+--pattern "{artist} -- {title}"     # Double dash
+--pattern "{artist}_{title}"        # Underscore
 ```
 
 ## Workflow
 
-1. **Analyze filenames** to determine the pattern
-2. **Run with --dry-run** to verify parsing
-3. **Execute** the actual tagging
+1. **Analyze** filenames → determine pattern
+2. **Dry-run** → verify parsing and Discogs matches
+3. **Execute** → apply tags
 
-## Direct Tagging (Without Script)
+## Tags Written
 
-For simple cases, use mutagen directly:
-
-```python
-from mutagen.easyid3 import EasyID3
-
-audio = EasyID3("song.mp3")
-audio['artist'] = 'Artist Name'
-audio['title'] = 'Song Title'
-audio.save()
-```
-
-## Common Issues
-
-- **No ID3 header**: Script creates one automatically
-- **Encoding issues**: Uses UTF-8 (ID3v2.4)
-- **Pattern mismatch**: Check separator characters match exactly
+| Field | MP3 (ID3) | FLAC/OGG | M4A |
+|-------|-----------|----------|-----|
+| Artist | TPE1 | artist | ©ART |
+| Title | TIT2 | title | ©nam |
+| Year | TDRC | date | ©day |
+| Genre | TCON | genre | ©gen |
+| Label | TPUB | label | — |
